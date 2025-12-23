@@ -1,0 +1,91 @@
+# values.yaml (Base Configuration)
+
+image:
+  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-an2-iac-prod/eva/ai-solutions/eva-vision/inference/eva-vision
+  pullPolicy: Always
+  tag: v2
+
+replicaCount: 1
+
+resources:
+  limits:
+    nvidia.com/gpu: 1
+    memory: "10Gi"
+    cpu: "4"
+  requests:
+    memory: "8Gi"
+    cpu: "2"
+    nvidia.com/gpu: 1
+
+service:
+  type: ClusterIP
+  port: 8000
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+affinity: {}
+
+nodeSelector: {}
+tolerations: []
+
+appConfig:
+  vmargs: "-Dlog4j.configurationFile=eva_ts/log4j2.xml"
+
+  # Network
+  inference_address: "http://0.0.0.0:8080"
+  management_address: "http://0.0.0.0:8081"
+  metrics_address: "http://0.0.0.0:8082"
+  grpc_inference_port: 7070
+  grpc_management_port: 7071
+
+  # Metrics / Flags
+  enable_envvars_config: true
+  enable_metrics_api: false
+  metrics_format: "prometheus"
+  metrics_interval: 600
+  install_py_dep_per_model: true
+  default_workers_per_model: 1
+  disable_token_authorization: true
+
+  # Models to Load
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,VitPose.mar"
+
+  models:
+    Owl-v2:
+      "1.0":
+        defaultVersion: true
+        marName: "Owl-v2.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    OmDet:
+      "1.0":
+        defaultVersion: true
+        marName: "OmDet.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+    VitPose:
+      "1.0":
+        defaultVersion: true
+        marName: "VitPose.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 100
+
+persistence:
+  enabled: true
+  storageClass: "local-path"  
+  size: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  mountPath: "/app/logs"
+  subPath: ""
+  modelStore: "model-store"
+  tmpDir: "tmp"
+  logLocation: "logs"

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "eva-vision.fullname" . }}-config
+  labels:
+    {{- include "eva-vision.labels" . | nindent 4 }}
+data:
+  config.properties: |
+    # JVM Args
+    vmargs={{ .Values.appConfig.vmargs }}
+
+    # Network
+    inference_address={{ .Values.appConfig.inference_address }}
+    management_address={{ .Values.appConfig.management_address }}
+    metrics_address={{ .Values.appConfig.metrics_address }}
+    grpc_inference_port={{ .Values.appConfig.grpc_inference_port }}
+    grpc_management_port={{ .Values.appConfig.grpc_management_port }}
+
+    # Metrics & Flags
+    enable_envvars_config={{ .Values.appConfig.enable_envvars_config }}
+    enable_metrics_api={{ .Values.appConfig.enable_metrics_api }}
+    metrics_format={{ .Values.appConfig.metrics_format }}
+    metrics_interval={{ .Values.appConfig.metrics_interval }}
+    install_py_dep_per_model={{ .Values.appConfig.install_py_dep_per_model }}
+    default_workers_per_model={{ .Values.appConfig.default_workers_per_model }}
+    disable_token_authorization={{ .Values.appConfig.disable_token_authorization }}
+
+    # Paths
+    model_store={{ .Values.persistence.modelStore }}
+    tmp_dir={{ .Values.persistence.tmpDir }}
+    log_location={{ .Values.persistence.logLocation }}
+
+    # Models
+    load_models={{ .Values.appConfig.load_models }}
+    # JSON 변환: YAML 객체를 JSON string 으로 변환 (줄바꿈 제거)
+    models={{ .Values.appConfig.models | toJson | replace "\n" "" }}
