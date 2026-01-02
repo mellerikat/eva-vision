@@ -3,7 +3,17 @@ entries:
   eva-vision:
   - apiVersion: v2
     appVersion: 2.3.0
-    created: "2025-12-29T23:27:42.1136852+09:00"
+    created: "2026-01-02T16:20:06.399584221+09:00"
+    description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
+    digest: c281421d40c87839f44425746c841b97feb534c0ac901f485b44999c38354ec1
+    name: eva-vision
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v2
+    appVersion: 2.3.0
+    created: "2026-01-02T16:20:06.399042485+09:00"
     description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
     digest: bc6c5be482a0dcda6acfde5e9985756fcf0cdd026ed8c16a11ec0aa94d5de04d
     name: eva-vision
@@ -13,7 +23,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: 2.3.0
-    created: "2025-12-29T23:27:42.112605994+09:00"
+    created: "2026-01-02T16:20:06.398444938+09:00"
     description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
     digest: bc4725bceb58edda3ff6dcfcb29f1abd5e107c23e7432765eaaac9468b9fc08e
     name: eva-vision
@@ -23,7 +33,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 2.3.0
-    created: "2025-12-29T23:27:42.11127644+09:00"
+    created: "2026-01-02T16:20:06.378196118+09:00"
     description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
     digest: 7238fc416e6c34bf31349f9f8738c14e3a4b426ed2426ba3956e6a69f04f5d1e
     name: eva-vision
@@ -33,7 +43,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-12-29T23:27:42.087914763+09:00"
+    created: "2026-01-02T16:20:06.364614504+09:00"
     description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
     digest: 7f9529a42f6520e6e2231516e730f621bba18a676bd3dae2a73a144cbc1d8e7f
     name: eva-vision
@@ -41,4 +51,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-1.0.0.tgz
     version: 1.0.0
-generated: "2025-12-29T23:27:42.067885621+09:00"
+generated: "2026-01-02T16:20:06.363361463+09:00"
