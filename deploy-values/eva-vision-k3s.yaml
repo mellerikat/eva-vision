@@ -1,37 +1,48 @@
-# values.yaml (Base Configuration)
+# values.yaml 
 
+# 1. Image Config
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-an2-iac-prod/eva/ai-solutions/eva-vision/inference/eva-vision
-  pullPolicy: Always
-  tag: v2
+  pullPolicy: IfNotPresent
+  tag: v3
 
+# 2. Replica
 replicaCount: 1
 
+# 3. Resources (GPU Setting)
 resources:
   limits:
-    nvidia.com/gpu: 1
-    memory: "10Gi"
+    memory: "8Gi"
     cpu: "4"
   requests:
     memory: "8Gi"
     cpu: "2"
-    nvidia.com/gpu: 1
 
+# 서비스 설정
 service:
-  type: ClusterIP
+  type: NodePort
   port: 8000
+  nodePort: 32070
 
+# ServiceAccount 설정
 serviceAccount:
   create: true
-  name: ""
+  name: ""        # 비워두면 <release>-sa 로 생성
   annotations: {}
+  automountServiceAccountToken: false
 
-affinity: {}
+# Pod 메타데이터
+podAnnotations: {}
+podLabels: {}
 
+# 스케줄링 관련
 nodeSelector: {}
 tolerations: []
+affinity: {}
 
+# TorchServe / App 설정
 appConfig:
+  # JVM Args
   vmargs: "-Dlog4j.configurationFile=eva_ts/log4j2.xml"
 
   # Network
@@ -51,8 +62,9 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,VitPose.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,RT-DETRV2.mar"
 
+  # Models detail setup
   models:
     Owl-v2:
       "1.0":
@@ -69,23 +81,38 @@ appConfig:
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1
-    VitPose:
+        maxBatchDelay: 150
+    RT-DETRV2:
       "1.0":
         defaultVersion: true
-        marName: "VitPose.mar"
+        marName: "RT-DETRV2.mar"
         minWorkers: 1
         maxWorkers: 1
-        batchSize: 1
-        maxBatchDelay: 100
+        batchSize: 8
+        maxBatchDelay: 30
 
+# Persistence (Log Storage)
 persistence:
-  enabled: true
-  storageClass: "local-path"  
+  enabled: false
+
+  # 기존 PVC 재사용 시 이름 지정 (우선순위 가장 높음)
+  existingClaim: ""
+
+  # 새 PVC 생성 시 설정 (existingClaim 비어있을 때만 사용)
+  storageClass: ""        # "" 이면 default StorageClass 사용
   size: 20Gi
   accessModes:
     - ReadWriteOnce
+
+  # Pod mount
   mountPath: "/app/logs"
   subPath: ""
-  modelStore: "model-store"
+
+  # PVC 메타데이터
+  annotations: {}
+  labels: {}
+
+  # TorchServe internal paths
+  modelStore: "model-store"  # 컨테이너 내부 경로
   tmpDir: "tmp"
-  logLocation: "logs"
+  logLocation: "logs"        # TorchServe 입장에서의 log 디렉터리 (컨테이너 경로 기준)
