@@ -25,7 +25,16 @@ spec:
       serviceAccountName: {{ include "eva-vision.serviceAccountName" . }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken | default true }}
       {{- end }}
-      
+
+      imagePullSecrets:
+        {{- if .Values.imagePullSecrets.enabled }}
+          {{- if .Values.imagePullSecrets.ExistingSecret }}
+        - name: {{ .Values.imagePullSecrets.ExistingSecret }}
+          {{- else if .Values.imagePullSecrets.create }}
+        - name: {{ include "eva-vision.fullname" . }}-regcred
+          {{- end }}
+        {{- end }}
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

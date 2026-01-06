@@ -5,6 +5,17 @@ image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-an2-iac-prod/eva/ai-solutions/eva-vision/inference/eva-vision
   pullPolicy: IfNotPresent
   tag: v3
+  
+imagePullSecrets:
+  enabled: true
+  create: true
+  
+  name: "" 
+
+  account: "339713051385"
+  region: "ap-northeast-2"
+  
+  password: ""
 
 # 2. Replica
 replicaCount: 1
