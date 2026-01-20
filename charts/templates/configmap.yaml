@@ -32,5 +32,4 @@ data:
 
     # Models
     load_models={{ .Values.appConfig.load_models }}
-    # JSON 변환: YAML 객체를 JSON string 으로 변환 (줄바꿈 제거)
-    models={{ .Values.appConfig.models | toJson | replace "\n" "" }}
+    models={{ .Values.appConfig.models | toPrettyJson | replace "\n" " \\\n" | indent 4 }}

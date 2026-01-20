@@ -81,24 +81,24 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "Owl-v2.mar"
-        minWorkers: 1
-        maxWorkers: 1
+        minWorkers: 2
+        maxWorkers: 2
         batchSize: 1
         maxBatchDelay: 150
     OmDet:
       "1.0":
         defaultVersion: true
         marName: "OmDet.mar"
-        minWorkers: 1
-        maxWorkers: 1
+        minWorkers: 2
+        maxWorkers: 2
         batchSize: 1
         maxBatchDelay: 150
     RT-DETRV2:
       "1.0":
         defaultVersion: true
         marName: "RT-DETRV2.mar"
-        minWorkers: 1
-        maxWorkers: 1
+        minWorkers: 2
+        maxWorkers: 2
         batchSize: 8
         maxBatchDelay: 30
 
