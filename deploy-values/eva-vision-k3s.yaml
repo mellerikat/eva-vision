@@ -2,9 +2,9 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-repo-an2-iac-prod/eva/ai-solutions/eva-vision/inference/eva-vision
+  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
-  tag: v3
+  tag: 1.2.1
   
 imagePullSecrets:
   enabled: true
