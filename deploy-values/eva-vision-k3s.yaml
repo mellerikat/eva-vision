@@ -33,7 +33,7 @@ resources:
 service:
   type: NodePort
   port: 8000
-  nodePort: 32070
+  nodePort: 32253
 
 # ServiceAccount 설정
 serviceAccount:
