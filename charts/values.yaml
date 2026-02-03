@@ -5,7 +5,9 @@ image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
   tag: 1.2.2
-  
+
+runtimeClassName: ""
+
 imagePullSecrets:
   enabled: true
   create: true
