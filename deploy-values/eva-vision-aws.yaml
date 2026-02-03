@@ -6,6 +6,7 @@ image:
   pullPolicy: Always
   tag: 1.2.2
 
+runtimeClassName: ""
 # 2. Replica
 replicaCount: 1
 
@@ -108,4 +109,5 @@ persistence:
   modelStore: "model-store"
   tmpDir: "tmp"
   logLocation: "logs"
+
 
