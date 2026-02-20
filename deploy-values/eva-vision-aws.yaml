@@ -4,7 +4,7 @@
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: Always
-  tag: 1.2.2
+  tag: 1.3.0
 
 runtimeClassName: ""
 # 2. Replica
@@ -66,7 +66,7 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,RT-DETRV2.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGDino.mar,RT-DETRV2.mar"
 
   models:
     Owl-v2:
@@ -81,8 +81,8 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "OmDet.mar"
-        minWorkers: 1
-        maxWorkers: 1
+        minWorkers: 2
+        maxWorkers: 2
         batchSize: 1
     RT-DETRV2:
       "1.0":
@@ -92,6 +92,22 @@ appConfig:
         maxWorkers: 1
         batchSize: 8
         maxBatchDelay: 30
+    LLMDet:
+      "1.0":
+        defaultVersion: true
+        marName: "LLMDet.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    MMGDino:
+      "1.0":
+        defaultVersion: true
+        marName: "MMGDino.mar"
+        minWorkers: 2
+        maxWorkers: 2
+        batchSize: 1
+        maxBatchDelay: 150
 
 # 6. Persistence (Log Storage)
 persistence:
@@ -109,5 +125,6 @@ persistence:
   modelStore: "model-store"
   tmpDir: "tmp"
   logLocation: "logs"
+
 
 
