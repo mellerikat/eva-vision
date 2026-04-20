@@ -14,10 +14,10 @@ replicaCount: 1
 resources:
   limits:
     nvidia.com/gpu: 1  
-    memory: "10Gi" 
+    memory: "12Gi" 
     cpu: "4"
   requests:
-    memory: "8Gi"
+    memory: "12Gi"
     cpu: "2"
     nvidia.com/gpu: 1
 
