@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "eva-vision.labels" . | nindent 4 }}
 data:
-  config.properties: |
+  config.properties.template: |
     # JVM Args
     vmargs={{ .Values.appConfig.vmargs }}
 
