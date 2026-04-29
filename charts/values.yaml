@@ -92,8 +92,8 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "OmDet.mar"
-        minWorkers: 2
-        maxWorkers: 2
+        minWorkers: 1
+        maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
     RT-DETRV2:
@@ -116,8 +116,8 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "MMGDino.mar"
-        minWorkers: 2
-        maxWorkers: 2
+        minWorkers: 1
+        maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
 
