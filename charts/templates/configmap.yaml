@@ -21,6 +21,8 @@ data:
     enable_metrics_api={{ .Values.appConfig.enable_metrics_api }}
     metrics_format={{ .Values.appConfig.metrics_format }}
     metrics_interval={{ .Values.appConfig.metrics_interval }}
+    number_of_netty_threads={{ .Values.appConfig.number_of_netty_threads }}
+    worker_retry_timeout_sec={{ .Values.appConfig.worker_retry_timeout_sec }}
     install_py_dep_per_model={{ .Values.appConfig.install_py_dep_per_model }}
     default_workers_per_model={{ .Values.appConfig.default_workers_per_model }}
     disable_token_authorization={{ .Values.appConfig.disable_token_authorization }}
