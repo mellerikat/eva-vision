@@ -65,8 +65,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: config-volume
-              mountPath: /app/eva_ts/config.properties
-              subPath: config.properties
+              mountPath: /app/eva_ts/config.properties.template
+              subPath: config.properties.template
               readOnly: true
             - name: dshm
               mountPath: /dev/shm
