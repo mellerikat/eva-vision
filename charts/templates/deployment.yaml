@@ -61,8 +61,40 @@ spec:
             - name: proxy
               containerPort: 8000
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: proxy
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: proxy
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- $resources := deepCopy .Values.resources }}
+            {{- if .Values.gpu.mig.resourceName }}
+            {{- $_ := set $resources.limits .Values.gpu.mig.resourceName (.Values.gpu.count | int) }}
+            {{- $_ := set $resources.requests .Values.gpu.mig.resourceName (.Values.gpu.count | int) }}
+            {{- end }}
+            {{- toYaml $resources | nindent 12 }}
+          env:
+            {{- if ne (toString .Values.gpu.cudaVisibleDevices) "" }}
+            - name: CUDA_VISIBLE_DEVICES
+              value: {{ .Values.gpu.cudaVisibleDevices | quote }}
+            {{- end }}
+            - name: GPU_MPS_ENABLED
+              value: {{ .Values.gpu.mps.enabled | quote }}
+            - name: CUDA_MPS_PIPE_DIRECTORY
+              value: {{ .Values.gpu.mps.pipeDirectory | quote }}
+            - name: CUDA_MPS_LOG_DIRECTORY
+              value: {{ .Values.gpu.mps.logDirectory | quote }}
           volumeMounts:
             - name: config-volume
               mountPath: /app/eva_ts/config.properties.template
@@ -70,6 +102,12 @@ spec:
               readOnly: true
             - name: dshm
               mountPath: /dev/shm
+            {{- if .Values.gpu.mps.enabled }}
+            - name: nvidia-mps
+              mountPath: {{ .Values.gpu.mps.pipeDirectory | quote }}
+            - name: nvidia-mps-log
+              mountPath: {{ .Values.gpu.mps.logDirectory | quote }}
+            {{- end }}
             {{- if .Values.persistence.enabled }}
             - name: logs
               mountPath: {{ .Values.persistence.mountPath }}
@@ -86,6 +124,12 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: "2Gi"
+        {{- if .Values.gpu.mps.enabled }}
+        - name: nvidia-mps
+          emptyDir: {}
+        - name: nvidia-mps-log
+          emptyDir: {}
+        {{- end }}
         {{- if .Values.persistence.enabled }}
         - name: logs
           persistentVolumeClaim:
