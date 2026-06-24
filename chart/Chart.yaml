@@ -3,4 +3,4 @@ appVersion: 3.0.0
 description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
 name: eva-vision
 type: application
-version: 2.0.2-b
+version: 2.0.3

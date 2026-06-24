@@ -4,7 +4,7 @@
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
-  tag: 2.0.2b
+  tag: 2.0.3
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
@@ -22,14 +22,17 @@ imagePullSecrets:
 # 2. Replica
 replicaCount: 1
 
+strategy:
+  type: Recreate
+
 # 3. Resources (GPU Setting)
 resources:
   limits:
     memory: "24Gi"
-    cpu: "8"
+    cpu: "4"
   requests:
     memory: "24Gi"
-    cpu: "8"
+    cpu: "2"
 
 gpu:
   count: 1
@@ -43,12 +46,12 @@ gpu:
 
 probes:
   liveness:
-    initialDelaySeconds: 900
+    initialDelaySeconds: 3000
     periodSeconds: 30
     timeoutSeconds: 5
     failureThreshold: 3
   readiness:
-    initialDelaySeconds: 120
+    initialDelaySeconds: 1200
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
@@ -122,7 +125,7 @@ appConfig:
         marName: "RT-DETRV2.mar"
         minWorkers: 1
         maxWorkers: 1
-        batchSize: 4
+        batchSize: 2
         maxBatchDelay: 150
     LLMDet:
       "1.0":

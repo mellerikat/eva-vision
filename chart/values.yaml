@@ -3,14 +3,15 @@
 # 1. Image Config
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
-  pullPolicy: IfNotPresent
-  tag: 2.0.2b
+  pullPolicy: Always
+  tag: 2.0.3
   
 runtimeClassName: "nvidia"
   
 imagePullSecrets:
   enabled: true
-  create: true
+  create: false
+  ExistingSecret: "eva-vision-regcred"
   
   name: "" 
 
@@ -21,6 +22,9 @@ imagePullSecrets:
 
 # 2. Replica
 replicaCount: 1
+
+strategy:
+  type: Recreate
 
 # 3. Resources (GPU Setting)
 resources:
@@ -50,12 +54,12 @@ service:
 
 probes:
   liveness:
-    initialDelaySeconds: 30
+    initialDelaySeconds: 3000
     periodSeconds: 30
     timeoutSeconds: 5
     failureThreshold: 3
   readiness:
-    initialDelaySeconds: 30
+    initialDelaySeconds: 1200
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
@@ -116,8 +120,8 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "OmDet.mar"
-        minWorkers: 2
-        maxWorkers: 2
+        minWorkers: 1
+        maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
     RT-DETRV2:
@@ -126,17 +130,16 @@ appConfig:
         marName: "RT-DETRV2.mar"
         minWorkers: 1
         maxWorkers: 1
-        batchSize: 4
+        batchSize: 1
         maxBatchDelay: 150
     LLMDet:
       "1.0":
         defaultVersion: true
         marName: "LLMDet.mar"
-        minWorkers: 2
-        maxWorkers: 2
+        minWorkers: 1
+        maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
-
 
 
 # Persistence (Log Storage)
