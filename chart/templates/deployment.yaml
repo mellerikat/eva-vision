@@ -8,7 +8,15 @@ spec:
   replicas: {{ .Values.replicaCount }}
   {{ with .Values.strategy }}
   strategy:
-    {{- toYaml . | nindent 4 }}
+    type: {{ .type | default "RollingUpdate" }}
+    {{ if eq (.type | default "RollingUpdate") "Recreate" }}
+    rollingUpdate: null
+    {{ else }}
+    {{ with .rollingUpdate }}
+    rollingUpdate:
+      {{- toYaml . | nindent 6 }}
+    {{ end }}
+    {{ end }}
   {{- end }}
   selector:
     matchLabels:
@@ -143,3 +151,4 @@ spec:
                          {{ include "eva-vision.fullname" . }}-logs
                        {{- end }}
         {{- end }}
+
