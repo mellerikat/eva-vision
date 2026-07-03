@@ -4,7 +4,7 @@
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
-  tag: 2.0.3
+  tag: 2.0.4
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
@@ -99,7 +99,7 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGDino.mar,RT-DETRV2.mar"
 
   # Models detail setup
   models:
@@ -131,6 +131,14 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "LLMDet.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    MMGdino:
+      "1.0":
+        defaultVersion: true
+        marName: "MMGdino.mar"
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1
