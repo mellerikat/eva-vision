@@ -4,7 +4,7 @@
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: Always
-  tag: 2.0.4
+  tag: 2.0.5
   
 runtimeClassName: "nvidia"
   
@@ -53,14 +53,21 @@ service:
   port: 8000
 
 probes:
-  liveness:
-    initialDelaySeconds: 3000
+  startup:
+    initialDelaySeconds: 300
     periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 3
+    failureThreshold: 20
+
   readiness:
-    initialDelaySeconds: 1200
+    initialDelaySeconds: 0
     periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  liveness:
+    initialDelaySeconds: 0
+    periodSeconds: 30
     timeoutSeconds: 5
     failureThreshold: 3
 
@@ -104,7 +111,7 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGdino.mar,RT-DETRV2.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGDino.mar,RT-DETRV2.mar,DINOv2Small.mar,E5EmbeddingSmall.mar"
 
   # Models detail setup
   models:
@@ -140,10 +147,26 @@ appConfig:
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
-    MMGdino:
+    MMGDino:
       "1.0":
         defaultVersion: true
-        marName: "MMGdino.mar"
+        marName: "MMGDino.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    DINOv2Small:
+      "1.0":
+        defaultVersion: true
+        marName: "DINOv2Small.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    E5EmbeddingSmall:
+      "1.0":
+        defaultVersion: true
+        marName: "E5EmbeddingSmall.mar"
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1

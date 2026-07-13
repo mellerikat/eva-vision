@@ -73,6 +73,16 @@ spec:
             - name: proxy
               containerPort: 8000
               protocol: TCP
+          {{- with .Values.probes.startup }}
+          startupProbe:
+            httpGet:
+              path: /ready
+              port: proxy
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            failureThreshold: {{ .failureThreshold }}
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /live
@@ -151,4 +161,3 @@ spec:
                          {{ include "eva-vision.fullname" . }}-logs
                        {{- end }}
         {{- end }}
-

@@ -4,7 +4,7 @@
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
-  tag: 2.0.4
+  tag: 2.0.5a1
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
@@ -29,29 +29,34 @@ strategy:
 resources:
   limits:
     memory: "24Gi"
-    cpu: "4"
+    cpu: "8"
   requests:
     memory: "24Gi"
-    cpu: "2"
+    cpu: "8"
 
 gpu:
   count: 1
   cudaVisibleDevices: ""
   mig:
-    resourceName: "nvidia.com/mig-1g.24gb"
+    resourceName: ""
   mps:
     enabled: true
     pipeDirectory: "/tmp/nvidia-mps"
     logDirectory: "/tmp/nvidia-mps-log"
 
 probes:
+  startup:
+    initialDelaySeconds: 300
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 30
   liveness:
-    initialDelaySeconds: 3000
+    initialDelaySeconds: 0
     periodSeconds: 30
     timeoutSeconds: 5
     failureThreshold: 3
   readiness:
-    initialDelaySeconds: 1200
+    initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
@@ -99,7 +104,7 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGDino.mar,RT-DETRV2.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGDino.mar,RT-DETRV2.mar,DINOv2Small.mar,E5EmbeddingSmall.mar"
 
   # Models detail setup
   models:
@@ -135,10 +140,26 @@ appConfig:
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
-    MMGdino:
+    MMGDino:
       "1.0":
         defaultVersion: true
-        marName: "MMGdino.mar"
+        marName: "MMGDino.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    DINOv2Small:
+      "1.0":
+        defaultVersion: true
+        marName: "DINOv2Small.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    E5EmbeddingSmall:
+      "1.0":
+        defaultVersion: true
+        marName: "E5EmbeddingSmall.mar"
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1
