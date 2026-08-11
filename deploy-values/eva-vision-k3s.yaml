@@ -4,7 +4,7 @@
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
-  tag: 2.0.5a1
+  tag: 3.1.0
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
@@ -28,11 +28,11 @@ strategy:
 # 3. Resources (GPU Setting)
 resources:
   limits:
-    memory: "24Gi"
-    cpu: "8"
+    memory: "30Gi"
+    cpu: "10"
   requests:
-    memory: "24Gi"
-    cpu: "8"
+    memory: "30Gi"
+    cpu: "10"
 
 gpu:
   count: 1
@@ -104,7 +104,15 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,MMGDino.mar,RT-DETRV2.mar,DINOv2Small.mar,E5EmbeddingSmall.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,Embedding.mar"
+
+  embedding:
+    enabledModels: "DINOv2Small,E5EmbeddingSmall,Qwen3VLEmbed2B"
+    modelRoot: "/app/model_dir"
+    torchCompileModels: ""
+    torchCompileBackend: "inductor"
+    torchCompileMode: "default"
+    torchCompileDynamic: "auto"
 
   # Models detail setup
   models:
@@ -140,30 +148,16 @@ appConfig:
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
-    MMGDino:
+    Embedding:
       "1.0":
         defaultVersion: true
-        marName: "MMGDino.mar"
+        marName: "Embedding.mar"
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
-    DINOv2Small:
-      "1.0":
-        defaultVersion: true
-        marName: "DINOv2Small.mar"
-        minWorkers: 1
-        maxWorkers: 1
-        batchSize: 1
-        maxBatchDelay: 150
-    E5EmbeddingSmall:
-      "1.0":
-        defaultVersion: true
-        marName: "E5EmbeddingSmall.mar"
-        minWorkers: 1
-        maxWorkers: 1
-        batchSize: 1
-        maxBatchDelay: 150
+        responseTimeout: 600
+        startupTimeout: 1200
         
 # Persistence (Log Storage)
 persistence:

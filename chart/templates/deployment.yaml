@@ -117,6 +117,18 @@ spec:
               value: {{ .Values.gpu.mps.pipeDirectory | quote }}
             - name: CUDA_MPS_LOG_DIRECTORY
               value: {{ .Values.gpu.mps.logDirectory | quote }}
+            - name: EMBEDDING_ENABLED_MODELS
+              value: {{ .Values.appConfig.embedding.enabledModels | quote }}
+            - name: EMBEDDING_MODEL_ROOT
+              value: {{ .Values.appConfig.embedding.modelRoot | quote }}
+            - name: EMBEDDING_TORCH_COMPILE_MODELS
+              value: {{ .Values.appConfig.embedding.torchCompileModels | quote }}
+            - name: EMBEDDING_TORCH_COMPILE_BACKEND
+              value: {{ .Values.appConfig.embedding.torchCompileBackend | quote }}
+            - name: EMBEDDING_TORCH_COMPILE_MODE
+              value: {{ .Values.appConfig.embedding.torchCompileMode | quote }}
+            - name: EMBEDDING_TORCH_COMPILE_DYNAMIC
+              value: {{ .Values.appConfig.embedding.torchCompileDynamic | quote }}
           volumeMounts:
             - name: config-volume
               mountPath: /app/eva_ts/config.properties.template
