@@ -107,6 +107,10 @@ spec:
             {{- end }}
             {{- toYaml $resources | nindent 12 }}
           env:
+            - name: TORCHSERVE_JVM_XMX
+              value: {{ .Values.appConfig.jvmXmx | quote }}
+            - name: TORCHSERVE_JVM_MAX_DIRECT_MEMORY
+              value: {{ .Values.appConfig.jvmMaxDirectMemory | quote }}
             {{- if ne (toString .Values.gpu.cudaVisibleDevices) "" }}
             - name: CUDA_VISIBLE_DEVICES
               value: {{ .Values.gpu.cudaVisibleDevices | quote }}

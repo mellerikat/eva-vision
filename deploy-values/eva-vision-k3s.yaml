@@ -1,22 +1,22 @@
-# values.yaml 
+# values.yaml
 
 # 1. Image Config
 image:
   repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
   pullPolicy: IfNotPresent
-  tag: 3.1.0
+  tag: 3.2.0
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
 imagePullSecrets:
   enabled: true
   create: true
-  
-  name: "" 
+
+  name: ""
 
   account: "339713051385"
   region: "ap-northeast-2"
-  
+
   password: ""
 
 # 2. Replica
@@ -28,10 +28,10 @@ strategy:
 # 3. Resources (GPU Setting)
 resources:
   limits:
-    memory: "30Gi"
+    memory: "36Gi"
     cpu: "10"
   requests:
-    memory: "30Gi"
+    memory: "36Gi"
     cpu: "10"
 
 gpu:
@@ -85,7 +85,9 @@ affinity: {}
 # TorchServe / App 설정
 appConfig:
   # JVM Args
-  vmargs: "-Dlog4j.configurationFile=eva_ts/log4j2.xml"
+  jvmXmx: "2g"
+  jvmMaxDirectMemory: "2g"
+  vmargs: "-Xmx${TORCHSERVE_JVM_XMX} -XX:MaxDirectMemorySize=${TORCHSERVE_JVM_MAX_DIRECT_MEMORY} -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=logs -Dlog4j.configurationFile=eva_ts/log4j2.xml"
 
   # Network
   inference_address: "http://0.0.0.0:8080"
@@ -158,7 +160,7 @@ appConfig:
         maxBatchDelay: 150
         responseTimeout: 600
         startupTimeout: 1200
-        
+
 # Persistence (Log Storage)
 persistence:
   enabled: false
