@@ -2,9 +2,9 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.2.0
+  tag: 3.3.0rc1
 
 runtimeClassName: "nvidia"
 
@@ -15,10 +15,46 @@ imagePullSecrets:
 
   name: ""
 
-  account: "339713051385"
+  account: "211722900905"
   region: "ap-northeast-2"
 
   password: ""
+
+# 모델 가중치 소스 (기동 시 scripts/fetch_models.sh 가 받는다).
+# 어떤 모델을 받을지는 appConfig.load_models / appConfig.embedding.enabledModels 로 정해진다.
+# 서버에서 지원하지 않는 모델은 그 목록에서 이름을 빼면 받지도 서빙하지도 않는다.
+modelSource:
+  type: s3        # s3 | harbor | none (none: 이미지/볼륨에 이미 있는 model_dir 사용)
+
+s3:
+  modelUri: "s3://spectrabrain-eva-vision/model_dir"
+  region: "ap-northeast-2"
+  # AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY 를 담은 기존 Secret 이름 (읽기 전용 키 권장).
+  # 직접 생성: kubectl create secret generic eva-vision-s3 \
+  #   --from-literal=AWS_ACCESS_KEY_ID=... --from-literal=AWS_SECRET_ACCESS_KEY=...
+  existingSecret: "eva-vision-s3"
+
+# 폐쇄망: Harbor(OCI 레지스트리)에서 받는다. 아티팩트는 <registry>/<project>/<소문자 모델명>:latest
+# (올리기: scripts/upload_models.sh --target harbor).
+harbor:
+  registry: ""    # 예: harbor.example.com
+  project: ""     # 모델 아티팩트용 프로젝트
+  insecure: false # https 인데 사설 인증서 등으로 TLS 검증을 생략해야 할 때
+  plainHttp: false # Harbor 가 http 로만 열려 있을 때 (이 경우 insecure 가 아니라 이것을 켠다)
+  # HARBOR_USERNAME / HARBOR_PASSWORD 를 담은 기존 Secret 이름 (pull 전용 robot 계정 권장).
+  # 직접 생성: kubectl create secret generic eva-vision-harbor \
+  #   --from-literal=HARBOR_USERNAME=... --from-literal=HARBOR_PASSWORD=...
+  existingSecret: "eva-vision-harbor"
+
+# 모델 캐시: /app/model_dir 를 PVC 에 둬서 Pod 재시작 후에도 가중치(~7GB)를 다시 받지 않는다.
+# 기본 켜짐. 끄면 재시작마다 전체를 다시 받는다 (ephemeral-storage 를 충분히 줄 것).
+modelCache:
+  enabled: true
+  existingClaim: ""   # 기존 PVC 를 쓰려면 이름 지정
+  storageClass: ""    # "" 이면 default StorageClass
+  size: 20Gi
+  accessModes:
+    - ReadWriteOnce
 
 # 2. Replica
 replicaCount: 1
@@ -31,9 +67,12 @@ resources:
   limits:
     memory: "36Gi"
     cpu: "10"
+    # 기동 시 S3 에서 받은 가중치(model_dir ~7GB)와 .mar 아카이브가 컨테이너 디스크에 쌓인다.
+    ephemeral-storage: "30Gi"
   requests:
     memory: "36Gi"
     cpu: "10"
+    ephemeral-storage: "30Gi"
 
 gpu:
   count: 1
@@ -57,7 +96,8 @@ probes:
     initialDelaySeconds: 300
     periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 20
+    # S3 다운로드 + archive + 모델 로딩 시간을 감안한다 (300s + 30s x 60).
+    failureThreshold: 60
 
   readiness:
     initialDelaySeconds: 0
@@ -90,8 +130,6 @@ affinity: {}
 # TorchServe / App 설정
 appConfig:
   # JVM Args
-  jvmXmx: "2g"
-  jvmMaxDirectMemory: "2g"
   vmargs: "-Xmx${TORCHSERVE_JVM_XMX} -XX:MaxDirectMemorySize=${TORCHSERVE_JVM_MAX_DIRECT_MEMORY} -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=logs -Dlog4j.configurationFile=eva_ts/log4j2.xml"
 
   # Network
@@ -110,6 +148,7 @@ appConfig:
   worker_retry_timeout_sec: 600
   install_py_dep_per_model: true
   default_workers_per_model: 1
+  dartfWorkers: 1
   disable_token_authorization: true
 
   # Models to Load
@@ -153,6 +192,14 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "LLMDet.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    DARTF:
+      "1.0":
+        defaultVersion: true
+        marName: "DARTF.mar"
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1

@@ -109,6 +109,51 @@ spec:
           env:
             - name: TORCHSERVE_JVM_XMX
               value: {{ .Values.appConfig.jvmXmx | quote }}
+            - name: MODEL_SOURCE
+              value: {{ .Values.modelSource.type | quote }}
+            - name: TORCHSERVE_LOAD_MODELS
+              value: {{ .Values.appConfig.load_models | quote }}
+            {{- if eq .Values.modelSource.type "s3" }}
+            - name: MODEL_S3_URI
+              value: {{ .Values.s3.modelUri | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.s3.region | quote }}
+            {{- if .Values.s3.existingSecret }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.s3.existingSecret }}
+                  key: AWS_SECRET_ACCESS_KEY
+            {{- end }}
+            {{- else if eq .Values.modelSource.type "harbor" }}
+            - name: HARBOR_REGISTRY
+              value: {{ required "harbor.registry is required when modelSource.type=harbor" .Values.harbor.registry | quote }}
+            - name: HARBOR_PROJECT
+              value: {{ required "harbor.project is required when modelSource.type=harbor" .Values.harbor.project | quote }}
+            - name: HARBOR_INSECURE
+              value: {{ .Values.harbor.insecure | quote }}
+            - name: HARBOR_PLAIN_HTTP
+              value: {{ .Values.harbor.plainHttp | quote }}
+            {{- if .Values.harbor.existingSecret }}
+            - name: HARBOR_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.harbor.existingSecret }}
+                  key: HARBOR_USERNAME
+            - name: HARBOR_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.harbor.existingSecret }}
+                  key: HARBOR_PASSWORD
+            {{- end }}
+            {{- end }}
+            - name: DARTF_WORKERS
+              value: {{ .Values.appConfig.dartfWorkers | quote }}
             - name: TORCHSERVE_JVM_MAX_DIRECT_MEMORY
               value: {{ .Values.appConfig.jvmMaxDirectMemory | quote }}
             {{- if ne (toString .Values.gpu.cudaVisibleDevices) "" }}
@@ -146,6 +191,10 @@ spec:
             - name: nvidia-mps-log
               mountPath: {{ .Values.gpu.mps.logDirectory | quote }}
             {{- end }}
+            {{- if .Values.modelCache.enabled }}
+            - name: model-cache
+              mountPath: {{ .Values.appConfig.embedding.modelRoot | quote }}
+            {{- end }}
             {{- if .Values.persistence.enabled }}
             - name: logs
               mountPath: {{ .Values.persistence.mountPath }}
@@ -167,6 +216,11 @@ spec:
           emptyDir: {}
         - name: nvidia-mps-log
           emptyDir: {}
+        {{- end }}
+        {{- if .Values.modelCache.enabled }}
+        - name: model-cache
+          persistentVolumeClaim:
+            claimName: {{ .Values.modelCache.existingClaim | default (printf "%s-models" (include "eva-vision.fullname" .)) }}
         {{- end }}
         {{- if .Values.persistence.enabled }}
         - name: logs

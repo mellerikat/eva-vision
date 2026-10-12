@@ -1,0 +1,16 @@
+{{- if and .Values.modelCache.enabled (not .Values.modelCache.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "eva-vision.fullname" . }}-models
+  labels:
+    {{- include "eva-vision.labels" . | nindent 4 }}
+spec:
+  accessModes: {{ toJson .Values.modelCache.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.modelCache.size }}
+  {{- if .Values.modelCache.storageClass }}
+  storageClassName: {{ .Values.modelCache.storageClass | quote }}
+  {{- end }}
+{{- end }}

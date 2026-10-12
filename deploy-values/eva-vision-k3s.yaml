@@ -2,9 +2,9 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: IfNotPresent
-  tag: 3.2.0
+  tag: 3.3.0rc1
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
@@ -14,7 +14,7 @@ imagePullSecrets:
 
   name: ""
 
-  account: "339713051385"
+  account: "211722900905"
   region: "ap-northeast-2"
 
   password: ""
@@ -49,7 +49,7 @@ probes:
     initialDelaySeconds: 300
     periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 30
+    failureThreshold: 60   # S3 다운로드 + archive 시간 반영 (300s + 30s x 60)
   liveness:
     initialDelaySeconds: 0
     periodSeconds: 30
@@ -103,6 +103,7 @@ appConfig:
   metrics_interval: 600
   install_py_dep_per_model: true
   default_workers_per_model: 1
+  dartfWorkers: 2
   disable_token_authorization: true
 
   # Models to Load
@@ -148,6 +149,14 @@ appConfig:
         marName: "LLMDet.mar"
         minWorkers: 1
         maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+    DARTF:
+      "1.0":
+        defaultVersion: true
+        marName: "DARTF.mar"
+        minWorkers: 2
+        maxWorkers: 2
         batchSize: 1
         maxBatchDelay: 150
     Embedding:

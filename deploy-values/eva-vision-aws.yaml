@@ -2,9 +2,9 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.2.0
+  tag: 3.3.0rc1
 
 runtimeClassName: ""
 
@@ -116,6 +116,14 @@ appConfig:
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
+    DARTF:
+      "1.0":
+        defaultVersion: true
+        marName: "DARTF.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
     Embedding:
       "1.0":
         defaultVersion: true
@@ -127,10 +135,16 @@ appConfig:
         responseTimeout: 600
         startupTimeout: 1200
 
+# 모델 캐시 (/app/model_dir). 로그 PVC 와 같은 StorageClass 를 쓴다.
+modelCache:
+  enabled: true
+  storageClass: "eva-vision-sc-bs"
+  size: 20Gi
+
 # 6. Persistence (Log Storage)
 persistence:
   enabled: true
-  storageClass: "eva-agent-sc-bs"
+  storageClass: "eva-vision-sc-bs"
   size: 20Gi
   accessModes:
     - ReadWriteOnce

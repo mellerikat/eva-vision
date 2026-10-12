@@ -1,0 +1,38 @@
+# 폐쇄망(Harbor) 오버레이. 환경별 values 뒤에 추가로 지정해 쓴다:
+#   helm upgrade --install eva-vision deploy/helm/chart \
+#     -f deploy/helm/values/eva-vision-k3s.yaml \
+#     -f deploy/helm/values/eva-vision-harbor.yaml
+# 아래 값은 개발용 Harbor(http://10.159.56.124:8090) 기준 예시다. 환경에 맞게 바꾼다.
+#
+# 클러스터에 Secret 을 먼저 만들어 둔다:
+#   kubectl create secret docker-registry eva-vision-regcred \
+#     --docker-server=<harbor> --docker-username=<robot> --docker-password=<secret>
+#   kubectl create secret generic eva-vision-harbor \
+#     --from-literal=HARBOR_USERNAME=<robot> --from-literal=HARBOR_PASSWORD=<secret>
+
+# 이미지: Harbor 로 옮긴 경로
+image:
+  repository: 10.159.56.124:8090/eva/eva-vision
+  tag: 3.3.0rc1
+
+# 이미지 pull 용 Secret 은 위에서 만든 것을 쓴다 (차트의 ECR 전용 Secret 생성은 쓰지 않는다).
+imagePullSecrets:
+  enabled: true
+  create: false
+  ExistingSecret: "eva-vision-regcred"
+
+# 모델 가중치도 Harbor 에서 받는다.
+modelSource:
+  type: harbor
+
+harbor:
+  registry: 10.159.56.124:8090
+  project: eva-vision-models
+  insecure: false
+  plainHttp: true   # http 로만 열린 Harbor
+  existingSecret: "eva-vision-harbor"
+
+# 서버가 지원하지 않는 모델은 load_models 에서 이름을 빼면 받지도 서빙하지도 않는다.
+# (이 값은 리스트 전체를 덮어쓰므로 필요한 항목을 모두 적는다. 예: LLMDet 제외)
+# appConfig:
+#   load_models: "Owl-v2.mar,ig.mar,OmDet.mar,RT-DETRV2.mar,Embedding.mar"
